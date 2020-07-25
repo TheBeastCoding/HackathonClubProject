@@ -64,8 +64,12 @@ public class NewClientThread extends Thread {
                     // construct message
                     newMessage = new Message("server","NA", pair.getKey(), pair.getValue(), null, null, 0, null);
                 } else if(message.getMessageType()==1) {
+                    // get user info
+                    username = message.getUser();
+                    password = message.getPassword();
+
                     // get club search data from database
-                    ArrayList<Club> clubs = DBUtil.getClubSearchResults(message.getParameter());
+                    ArrayList<Club> clubs = DBUtil.getClubSearchResults(username, password, message.getParameter());
 
                     // construct message
                     newMessage = new Message("server","NA", null, null, clubs, null, 1, null);
@@ -75,14 +79,22 @@ public class NewClientThread extends Thread {
 
                     // construct message
                     newMessage = new Message("server","NA", null, null, null, events, 2, null);
+                } else if(message.getMessageType()==3) {
+                    // get user data from database
+                    Pair<ArrayList<Club>, ArrayList<Event>> pair = DBUtil.unsubscribeFromClub(username, password, message.getClubs().get(0));
+
+                    // construct message
+                    newMessage = new Message("server","NA", pair.getKey(), pair.getValue(), null, null, 0, null);
+                } else if(message.getMessageType()==4) {
+                    newMessage = null;
                 } else {
                     newMessage = null;
                 }
 
                 if(writeToClient(newMessage)) {
-                    System.out.println("Message sent");
+                    System.out.println("Message sent to client");
                 } else {
-                    System.out.println("Could not sent message");
+                    System.out.println("Did not sent message back to client");
                 }
 
             } catch(SocketException | EOFException ex) {
@@ -99,6 +111,11 @@ public class NewClientThread extends Thread {
     public boolean writeToClient(Message message) {
         // if client isnt connected, message cant be sent
         if(!clientSocket.isConnected()) {
+            return false;
+        }
+
+        // if msg is empty
+        if(message==null) {
             return false;
         }
 
