@@ -63,6 +63,65 @@ public class DBUtil {
         return new Pair<ArrayList<Club>, ArrayList<Event>>(clubList, eventList);
     }
 
+    protected static Pair<ArrayList<Club>, ArrayList<Event>> unsubscribeFromClub(String username, String password, Club club) {
+        // create connection
+        ConnectDB();
+
+        Statement statement = null;
+
+        try {
+            statement = connection.createStatement();
+
+            String query = "delete from USER_CLUB where userID=ANY(select userID from USERS where userEmail='" + username + "' and password='" + password + "') and clubID=" + club.getClubID();
+
+            statement.executeUpdate(query);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Query error: failed to unsubscribe");
+        }
+
+        // get user's clubs
+        ArrayList<Club> clubList = getClubInfo(username, password);
+
+        // get user's upcoming events
+        ArrayList<Event> eventList = getUpcomingEvents(username, password);
+
+        // disconnect from db
+        DisconnectDB();
+
+        return new Pair<ArrayList<Club>, ArrayList<Event>>(clubList, eventList);
+    }
+
+    protected static Pair<ArrayList<Club>, ArrayList<Event>> subscribeToClub(String username, String password, Club club) {
+        // create connection
+        ConnectDB();
+
+        Statement statement = null;
+
+        try {
+            statement = connection.createStatement();
+
+            String query = "insert into USER_CLUB";     // needs work here
+
+            statement.executeUpdate(query);
+
+        } catch (SQLException e) {
+            System.out.println("Query error: failed to subscribe");
+        }
+
+        // get user's clubs
+        ArrayList<Club> clubList = getClubInfo(username, password);
+
+        // get user's upcoming events
+        ArrayList<Event> eventList = getUpcomingEvents(username, password);
+
+        // disconnect from db
+        DisconnectDB();
+
+        return new Pair<ArrayList<Club>, ArrayList<Event>>(clubList, eventList);
+    }
+
     protected static ArrayList<Club> getClubSearchResults(String param) {
         // create connection
         ConnectDB();

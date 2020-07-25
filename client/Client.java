@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import objects.Club;
 import objects.Event;
 import objects.Message;
@@ -21,6 +22,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Client extends Application {
     // server variables
@@ -50,8 +52,33 @@ public class Client extends Application {
     private ObservableList<Event> eventSearchList;
 
     // list views
-    private ListView<Club> clubListView;
+    // private ListView<Club> clubListView;
     private ListView<Event> eventListView;
+
+    // custom row elements for deletion of subscribed clubs
+    public static class ClubCell extends HBox {
+        Club club;
+        Label label = new Label();
+        Button button;
+
+        ClubCell(Club club, Button button) {
+            super();
+
+            this.club = club;
+
+            this.button = button;
+
+            label.setMaxWidth(Double.MAX_VALUE);
+            HBox.setHgrow(label, Priority.ALWAYS);
+
+            label.setText(club.getClubName());
+
+            this.getChildren().addAll(label, button);
+        }
+    }
+
+    private ListView<ClubCell> clubCellListView = new ListView<>();
+    private ObservableList<ClubCell> clubCellsObservableList;
 
     // screen types
     private enum CurrentWindow {
@@ -118,6 +145,7 @@ public class Client extends Application {
         VBox menuOptions = new VBox(10);
         menuOptions.getChildren().addAll(homeButton, clubButton, eventButton);
 
+        /*   Code for if table has rows without buttons
         // create list view of all user's clubs objects
         clubListView = new ListView<>(clubObservableList);
 
@@ -138,6 +166,27 @@ public class Client extends Application {
         // if user selects a club from list
         clubListView.setOnMouseClicked(e-> {
             ClubInfoPane clubInfoPane = new ClubInfoPane(clubListView.getSelectionModel().getSelectedItem());
+        });
+         */
+
+        ArrayList<ClubCell> clubCells = new ArrayList<>();
+        for(int i=0;i<clubObservableList.size();i++) {
+            Button button = new Button("X");
+            Club c = clubObservableList.get(i);
+
+            button.setOnMouseClicked(e->{
+                requestUnsubscribe(c);
+            });
+            clubCells.add(new ClubCell(c, button));
+        }
+
+        clubCellsObservableList = FXCollections.observableArrayList(clubCells);
+
+        clubCellListView.setItems(clubCellsObservableList);
+
+        // if user selects a club from list
+        clubCellListView.setOnMouseClicked(e-> {
+            ClubInfoPane clubInfoPane = new ClubInfoPane(clubCellListView.getSelectionModel().getSelectedItem().club);
         });
 
         // create list view of all user's clubs objects
@@ -166,7 +215,7 @@ public class Client extends Application {
         VBox clubSummary = new VBox();
         clubSummary.setAlignment(Pos.TOP_CENTER);
         clubSummary.setPrefWidth(200);
-        clubSummary.getChildren().addAll(new Label("My Clubs"), clubListView);
+        clubSummary.getChildren().addAll(new Label("My Clubs"), clubCellListView);
 
         // event section
         VBox eventSummary = new VBox();
@@ -385,6 +434,17 @@ public class Client extends Application {
 
     private String getPassword() {
         return passwordField.getText();
+    }
+
+    // unsubscribe from club c
+    private void requestUnsubscribe(Club c) {
+        try {
+            ArrayList<Club> clubs = new ArrayList<>();
+            clubs.add(c);
+            toServer.writeObject(new Message(getUsername(), getPassword(), clubs, null, null, null, 3, null));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // data request
