@@ -45,14 +45,15 @@ public class Client extends Application {
     private Button eventButton = new Button("Events");
     private Button logoutButton = new Button("Logout");
 
-    // data
-    private ObservableList<Club> clubObservableList;
-    private ObservableList<Event> eventObservableList;
-    private ObservableList<Club> clubSearchList;
-    private ObservableList<Event> eventSearchList;
+    // home page user data
+    private ObservableList<Club> clubObservableList = FXCollections.observableArrayList();
+    private ObservableList<Event> eventObservableList = FXCollections.observableArrayList();
+
+    // search page data
+    private ObservableList<Club> clubSearchList = FXCollections.observableArrayList();
+    private ObservableList<Event> eventSearchList = FXCollections.observableArrayList();
 
     // list views
-    // private ListView<Club> clubListView;
     private ListView<Event> eventListView;
 
     // custom row elements for deletion of subscribed clubs
@@ -77,8 +78,13 @@ public class Client extends Application {
         }
     }
 
+    // for home screen
     private ListView<ClubCell> clubCellListView = new ListView<>();
     private ObservableList<ClubCell> clubCellsObservableList;
+
+    // for club search screen
+    private ListView<ClubCell> clubSearchCellListView = new ListView<>();
+    private ObservableList<ClubCell> clubSearchCellsObservableList;
 
     // screen types
     private enum CurrentWindow {
@@ -145,30 +151,6 @@ public class Client extends Application {
         VBox menuOptions = new VBox(10);
         menuOptions.getChildren().addAll(homeButton, clubButton, eventButton);
 
-        /*   Code for if table has rows without buttons
-        // create list view of all user's clubs objects
-        clubListView = new ListView<>(clubObservableList);
-
-        // populate list view with club objects
-        clubListView.setCellFactory(params -> new ListCell<Club>() {
-            @Override
-            protected void updateItem(Club club, boolean empty) {
-                super.updateItem(club, empty);
-
-                if(empty || club==null || club.getClubName()==null) {
-                    setText(null);
-                } else {
-                    setText(club.getClubName());
-                }
-            }
-        });
-
-        // if user selects a club from list
-        clubListView.setOnMouseClicked(e-> {
-            ClubInfoPane clubInfoPane = new ClubInfoPane(clubListView.getSelectionModel().getSelectedItem());
-        });
-         */
-
         ArrayList<ClubCell> clubCells = new ArrayList<>();
         for(int i=0;i<clubObservableList.size();i++) {
             Button button = new Button("X");
@@ -181,7 +163,6 @@ public class Client extends Application {
         }
 
         clubCellsObservableList = FXCollections.observableArrayList(clubCells);
-
         clubCellListView.setItems(clubCellsObservableList);
 
         // if user selects a club from list
@@ -279,30 +260,27 @@ public class Client extends Application {
         // add elements to center pane
         center.getChildren().addAll(new Label("Club Search by Name"), clubSearchBar, new Label("Club Search by Tag"), clubTagOption, search);
 
-        // create list view for search results
-        ListView<Club> clubSearchResults = new ListView(clubSearchList);
+        ArrayList<ClubCell> clubCells = new ArrayList<>();
+        for(int i=0;i<clubSearchList.size();i++) {
+            Button button = new Button("+");
+            Club c = clubSearchList.get(i);
 
-        // populate list view with event objects
-        clubSearchResults.setCellFactory(params -> new ListCell<Club>() {
-            @Override
-            protected void updateItem(Club club, boolean empty) {
-                super.updateItem(club, empty);
+            button.setOnMouseClicked(e->{
+                requestSubscribe(c);
+            });
+            clubCells.add(new ClubCell(c, button));
+        }
 
-                if(empty || club==null || club.getClubName()==null) {
-                    setText(null);
-                } else {
-                    setText(club.getClubName());
-                }
-            }
-        });
+        clubSearchCellsObservableList = FXCollections.observableArrayList(clubCells);
+        clubSearchCellListView.setItems(clubSearchCellsObservableList);
 
         // if user selects an event from the list
-        clubSearchResults.setOnMouseClicked(e-> {
-            ClubInfoPane clubInfoPane = new ClubInfoPane(clubSearchResults.getSelectionModel().getSelectedItem());
+        clubSearchCellListView.setOnMouseClicked(e-> {
+            ClubInfoPane clubInfoPane = new ClubInfoPane(clubSearchCellListView.getSelectionModel().getSelectedItem().club);
         });
 
         // add elements to right pane
-        right.getChildren().addAll(new Label("Club Search Results"), clubSearchResults);
+        right.getChildren().addAll(new Label("Club Search Results"), clubSearchCellListView);
         right.setAlignment(Pos.TOP_CENTER);
 
         // add all elements of home screen to pane
@@ -447,6 +425,17 @@ public class Client extends Application {
         }
     }
 
+    // subscribe to club c
+    private void requestSubscribe(Club c) {
+        try {
+            ArrayList<Club> clubs = new ArrayList<>();
+            clubs.add(c);
+            toServer.writeObject(new Message(getUsername(), getPassword(), clubs, null, null, null, 4, null));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     // data request
     private void requestUserData() {
         try {
@@ -458,7 +447,7 @@ public class Client extends Application {
 
     private void requestClubSearchDataByString(String param) {
         try {
-            toServer.writeObject(new Message(null, null, null, null, null, null, 1, param));
+            toServer.writeObject(new Message(getUsername(), getPassword(), null, null, null, null, 1, param));
         } catch (IOException e) {
             e.printStackTrace();
         }
