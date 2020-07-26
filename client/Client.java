@@ -498,8 +498,8 @@ public class Client extends Application {
                         eventObservableList = FXCollections.observableArrayList(message.getUpcomingEvents());
 
                         // clear search data
-                        // clubSearchList.removeAll();
-                        // eventSearchList.removeAll();
+                        clubSearchList = FXCollections.observableArrayList();
+                        eventSearchList  = FXCollections.observableArrayList();
 
                         Platform.runLater(() -> {
                             updateScreen();
