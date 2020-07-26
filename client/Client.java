@@ -311,6 +311,11 @@ public class Client extends Application {
         });
 
         search.setOnAction(e -> {
+            // empty existing data
+            //clubSearchCellsObservableList = FXCollections.observableArrayList();
+            //clubSearchList = FXCollections.observableArrayList();
+
+            // send query
             requestClubSearchDataByString(clubSearchBar.getText());
         });
     }
@@ -388,6 +393,7 @@ public class Client extends Application {
         });
 
         search.setOnAction(e -> {
+            // eventSearchList = FXCollections.observableArrayList();
             requestEventSearchDataByString(eventSearchBar.getText());
         });
     }

@@ -135,7 +135,7 @@ public class DBUtil {
             statement = connection.createStatement();
 
             // select c.clubID, c.clubName, c.clubDesc from CLUB c where c.clubName LIKE '%club%' and clubID NOT IN(select clubID from USER_CLUB where userID=ANY(select userID from USERS where userEmail='" + username + "' and password='" + password + "'));
-            String query = "select c.clubID, c.clubName, c.clubDesc from CLUB c where c.clubName LIKE '%club%' and clubID NOT IN(select clubID from USER_CLUB where userID=ANY(select userID from USERS where userEmail='" + username + "' and password='" + password + "'))";
+            String query = "select c.clubID, c.clubName, c.clubDesc from CLUB c where c.clubName LIKE '%" + param + "%' and clubID NOT IN(select clubID from USER_CLUB where userID=ANY(select userID from USERS where userEmail='" + username + "' and password='" + password + "'))";
 
             ResultSet resultSet = statement.executeQuery(query);
 
