@@ -41,6 +41,8 @@ public class ClubInfoPane extends BorderPane {
         Label eBoardLabel = new Label("E-Board");
         Label eventsLabel = new Label("Club Events");
 
+        //
+
         // set column names for table
         eBoardTableView = new TableView();
         tableData = FXCollections.observableArrayList();

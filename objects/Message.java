@@ -19,6 +19,8 @@ public class Message implements Serializable {
     0 - user data request
     1 - club search request
     2 - event search request
+    3 - unsubscribe from club request
+    4 - subscribe to club request
      */
 
     public Message(String user, String password, ArrayList<Club> myClubs, ArrayList<Event> myUpcomingEvents, ArrayList<Club> clubSearchList, ArrayList<Event> eventSearchList, Integer messageType, String parameter) {
