@@ -216,6 +216,28 @@ values
 (5, 2, "Member");
 
 
+-- insert another test club
+insert into CLUB
+(clubName, clubDesc, universityID)
+values
+("The Force Institute", "Learn to use the force.", 1);
+
+insert into USER_CLUB
+(userID, clubID, role)
+values
+(10, 4, "President");
+
+-- insert another test club
+insert into CLUB
+(clubName, clubDesc, universityID)
+values
+("The Hammock Club", "Learn to use a hammock.", 1);
+
+insert into USER_CLUB
+(userID, clubID, role)
+values
+(2, 5, "President");
+
 -- insert test club
 insert into CLUB
 (clubName, clubDesc, universityID)
