@@ -1,4 +1,4 @@
-# HackathonClubProject
+# Hackathon Club Management Project
 Description: University club management software. Clients can subscribe and unsubscribe from university clubs. Clients can search for clubs or events. Clients can see club or event information.
 
 Implementation: 
