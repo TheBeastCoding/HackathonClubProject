@@ -1,5 +1,6 @@
 # HackathonClubProject
-Description: University club management software.
+Description: University club management software. Clients can subscribe and unsubscribe from university clubs. Clients can search for clubs or events. Clients can see club or event information.
+Implementation: Java and JavaFX.
 
 Current Features:
 - Multiple Clients
