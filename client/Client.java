@@ -66,7 +66,6 @@ public class Client extends Application {
             super();
 
             this.club = club;
-
             this.button = button;
 
             label.setMaxWidth(Double.MAX_VALUE);
