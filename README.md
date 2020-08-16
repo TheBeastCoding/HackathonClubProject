@@ -22,4 +22,4 @@ Future Plans:
 - Add/ Drop clubs
 - Change member roles.
 
-
+To view what the final product looks like, open up the AppImages folder in the repository.
