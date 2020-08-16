@@ -106,8 +106,8 @@ public class Client extends Application {
         eventObservableList = FXCollections.observableArrayList();
 
         // fields
-        usernameField = new TextField("rkiefer7196@floridapoly.edu");
-        passwordField = new TextField("abc");
+        usernameField = new TextField("username");
+        passwordField = new TextField("password");
 
         // buttons
         loginButton = new Button("Login");
